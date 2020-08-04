@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Stopwatch</title>
+</head>
+
+<body>
+    <div id="page-container">
+        <div id="content-wrap" >
+            <div id="app">
+                <div class="row">
+                    <h1 class="title">Stopwatch</h1>
+                </div>
+                <div class="row row-digit">
+                    <div>
+                        <span id="digit-minutes">00:</span>
+                    </div>
+                    <div>
+                        <span id="digit-seconds">00.</span>
+                    </div>
+                    <div>
+                        <span id="digit-milliseconds">000</span>
+                    </div>             
+                </div>
+                <div class="row row-button">
+                    <div class="group-button">
+                        <button class="btn btn-primary" onclick="onStart();" id="btn-start">Start</button>
+                        <button class="btn btn-primary" onclick="onContinue();" id="btn-continue">Continue</button>
+                        <button class="btn btn-primary" onclick="onPause();" id="btn-pause">Pause</button>
+                        <button class="btn btn-secondary" onclick="onReset();" id="btn-reset">Reset</button>
+                        <div style="clear: both;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+            <p id="footer-content">Made with <span id="heart-emoji">❤</span> by <a href="http://github.com/thiagorocha503/stopwatch-app" target="_blank" id="github-link" rel="noopener noreferrer">Thiago Rocha</a></p>
+        </footer>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+
+</html>
