@@ -29,14 +29,10 @@ class Control {
 }
 class Display {
     constructor() {
-        this.digit_minutes = document.getElementById("digit-minutes");
-        this.digit_seconds = document.getElementById("digit-seconds");
-        this.digit_milliseconds = document.getElementById("digit-milliseconds");
+        this.display = document.getElementById("display");
     }
     setTime(minutes, seconds, milliseconds) {
-        this.digit_minutes.innerHTML = leftPad(minutes, 2) + ":";
-        this.digit_seconds.innerHTML = leftPad(seconds, 2) + ".";
-        this.digit_milliseconds.innerHTML = leftPad(milliseconds, 3);
+        this.display.innerHTML = leftPad(minutes, 2) + ":" + leftPad(seconds, 2) + "." + leftPad(milliseconds, 3);
     }
 }
 $(() => {
