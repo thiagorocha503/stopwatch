@@ -1,101 +1,108 @@
 "use strict";
-// Button
-const btn_start = document.getElementById("btn-start");
-const btn_continue = document.getElementById("btn-continue");
-const btn_pause = document.getElementById("btn-pause");
-const btn_reset = document.getElementById("btn-reset");
-// Digits
-const digit_minutes = document.getElementById("digit-minutes");
-const digit_seconds = document.getElementById("digit-seconds");
-const digit_milliseconds = document.getElementById("digit-milliseconds");
-// 
+class Control {
+    constructor() {
+        this.btn_start = document.getElementById("btn-start");
+        this.btn_continue = document.getElementById("btn-continue");
+        this.btn_pause = document.getElementById("btn-pause");
+        this.btn_reset = document.getElementById("btn-reset");
+    }
+    onPlay() {
+        this.reset();
+        this.btn_pause.style.display = "block";
+        this.btn_reset.style.display = "block";
+    }
+    onReset() {
+        this.reset();
+        this.btn_start.style.display = "block";
+    }
+    onPause() {
+        this.reset();
+        this.btn_continue.style.display = "block";
+        this.btn_reset.style.display = "block";
+    }
+    reset() {
+        let buttons = document.getElementsByClassName("stopwatch-button");
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].setAttribute("style", "display: none");
+        }
+    }
+}
+class Display {
+    constructor() {
+        this.digit_minutes = document.getElementById("digit-minutes");
+        this.digit_seconds = document.getElementById("digit-seconds");
+        this.digit_milliseconds = document.getElementById("digit-milliseconds");
+    }
+    setTime(minutes, seconds, milliseconds) {
+        this.digit_minutes.innerHTML = leftPad(minutes, 2) + ":";
+        this.digit_seconds.innerHTML = leftPad(seconds, 2) + ".";
+        this.digit_milliseconds.innerHTML = leftPad(milliseconds, 3);
+    }
+}
+$(() => {
+    var _a, _b, _c, _d;
+    const display = new Display();
+    const controller = new Control();
+    const app = new Stopwatch(display, controller);
+    (_a = document.getElementById("btn-start")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => app.play());
+    (_b = document.getElementById("btn-continue")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => app.continue());
+    (_c = document.getElementById("btn-pause")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => app.pause());
+    (_d = document.getElementById("btn-reset")) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => app.reset());
+});
+class Stopwatch {
+    constructor(display, controller) {
+        this.time = 0;
+        this.beforeTime = 0;
+        this.interval_id = NaN;
+        this.display = display;
+        this.constroller = controller;
+    }
+    clock() {
+        let now = Date.now();
+        let different = now - this.beforeTime;
+        this.time += different;
+        this.render();
+        this.beforeTime = now;
+    }
+    play() {
+        if (isNaN(this.interval_id)) {
+            this.beforeTime = Date.now();
+            this.constroller.onPlay();
+            this.interval_id = setInterval(() => {
+                this.clock();
+            }, DELAY);
+        }
+    }
+    pause() {
+        if (!isNaN(this.interval_id)) {
+            clearInterval(this.interval_id);
+            this.interval_id = NaN;
+            this.constroller.onPause();
+        }
+    }
+    continue() {
+        this.play();
+        this.constroller.onPlay();
+    }
+    reset() {
+        this.pause();
+        this.time = 0;
+        this.render();
+        this.constroller.onReset();
+    }
+    render() {
+        let minutes = Math.floor((this.time % HOURS) / MINUTES);
+        let seconds = Math.floor((this.time % MINUTES) / SECONDS);
+        let milliseconds = this.time % 1000;
+        this.display.setTime(minutes, seconds, milliseconds);
+    }
+}
 const SECONDS = 1000;
 const MINUTES = 60 * SECONDS;
 const HOURS = 60 * MINUTES;
 const DELAY = 10;
-//
-var time = 0;
-var beforeTime;
-var interval_id = NaN;
-function setVisibleStartButton(visible) {
-    if (visible) {
-        btn_start.style.display = "block";
-    }
-    else {
-        btn_start.style.display = "none";
-    }
-}
-function setVisiblePauseButton(visible) {
-    if (visible) {
-        btn_pause.style.display = "block";
-    }
-    else {
-        btn_pause.style.display = "none";
-    }
-}
-function setVisibleContinueButton(visible) {
-    if (visible) {
-        btn_continue.style.display = "block";
-    }
-    else {
-        btn_continue.style.display = "none";
-    }
-}
-function setVisibleResetButton(visible) {
-    if (visible) {
-        btn_reset.style.display = "block";
-    }
-    else {
-        btn_reset.style.display = "none";
-    }
-}
-function clock() {
-    var now = Date.now();
-    var diferrent = now - beforeTime;
-    time += diferrent;
-    render();
-    beforeTime = now;
-}
-function onStart() {
-    if (isNaN(interval_id)) {
-        beforeTime = Date.now();
-        setVisibleStartButton(false);
-        setVisiblePauseButton(true);
-        setVisibleResetButton(true);
-        setVisibleContinueButton(false);
-        interval_id = setInterval(clock, DELAY);
-    }
-}
-function onPause() {
-    console.log(">> Pause");
-    if (!isNaN(interval_id)) {
-        clearInterval(interval_id);
-        interval_id = NaN;
-        setVisiblePauseButton(false);
-        setVisibleContinueButton(true);
-    }
-}
-function onContinue() {
-    onStart();
-}
-function onReset() {
-    onPause();
-    time = 0;
-    render();
-    setVisibleResetButton(false);
-    setVisibleContinueButton(false);
-    setVisiblePauseButton(false);
-    setVisibleStartButton(true);
-}
-function render() {
-    var minutes = Math.floor((time % HOURS) / MINUTES);
-    var seconds = Math.floor((time % MINUTES) / SECONDS);
-    var milliseconds = time % 1000;
-    digit_minutes.innerHTML = leftPad(minutes, 2) + ":";
-    digit_seconds.innerHTML = leftPad(seconds, 2) + ".";
-    digit_milliseconds.innerHTML = leftPad(milliseconds, 3);
-    console.log("> " + leftPad(minutes, 2) +
-        ":" + leftPad(seconds, 2) + "." + leftPad(milliseconds, 3));
+function $(func) {
+    window.addEventListener("load", () => func());
 }
 function leftPad(value, lenght) {
     var str = "" + value;
@@ -103,6 +110,3 @@ function leftPad(value, lenght) {
     var ans = pad.substring(0, pad.length - str.length) + str;
     return ans;
 }
-setVisiblePauseButton(false);
-setVisibleResetButton(false);
-setVisibleContinueButton(false);
