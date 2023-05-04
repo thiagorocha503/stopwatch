@@ -1,22 +1,22 @@
 
-
-class Stopwatch{
-
+class Stopwatch {
     private time: number;
     private beforeTime;
     private interval_id;
     private display: Display;
     private constroller: Control;
+    private table: LapTable;
 
-    constructor(display: Display, controller: Control){
+    constructor(display: Display, controller: Control, table: LapTable) {
         this.time = 0;
         this.beforeTime = 0;
         this.interval_id = NaN;
         this.display = display;
-        this.constroller = controller;     
+        this.table = table;
+        this.constroller = controller;
     }
-    
-    private clock(){
+
+    private clock() {
         let now = Date.now();
         let different = now - this.beforeTime;
         this.time += different;
@@ -24,41 +24,45 @@ class Stopwatch{
         this.beforeTime = now;
     }
 
-    public play(){
+    public play() {
         if (isNaN(this.interval_id)) {
+           
             this.beforeTime = Date.now();
-            this.constroller.onPlay()
-            this.interval_id = setInterval(()=>{
+            this.constroller.onPlay();
+            this.interval_id = setInterval(() => {
                 this.clock();
-            }, DELAY);         
+            }, DELAY);
         }
     }
 
-    public pause(){
+    public pause() {
         if (!isNaN(this.interval_id)) {
             clearInterval(this.interval_id);
             this.interval_id = NaN;
-            this.constroller.onPause()
+            this.constroller.onPause();
         }
     }
 
-    public continue(){
-        this.play()
-        this.constroller.onPlay()
+    public continue() {
+        this.play();
+
+        this.constroller.onPlay();
     }
 
-    public reset(){
+    public reset() {
         this.pause();
         this.time = 0;
         this.render();
-        this.constroller.onReset()
+        this.table.reset();
+        this.constroller.onReset();
     }
 
-    private render(){
-        let minutes: number = Math.floor((this.time % HOURS) / MINUTES);
-        let seconds: number = Math.floor((this.time % MINUTES) / SECONDS);
-        let milliseconds: number = this.time % 1000;
+    public lap() {
+        this.table.lap(this.time);
+    }
+
+    private render() {
+        let { minutes, seconds, milliseconds } = timeF(this.time);
         this.display.setTime(minutes, seconds, milliseconds);
     }
-
 }
